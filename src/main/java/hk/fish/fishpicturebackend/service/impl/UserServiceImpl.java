@@ -1,16 +1,20 @@
 package hk.fish.fishpicturebackend.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.lang.UUID;
+import cn.hutool.core.util.ObjUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import hk.fish.fishpicturebackend.common.ResultUtils;
-import hk.fish.fishpicturebackend.domain.dto.UserLoginRequest;
-import hk.fish.fishpicturebackend.domain.dto.UserRegisterRequest;
+import hk.fish.fishpicturebackend.domain.dto.user.UserLoginRequest;
+import hk.fish.fishpicturebackend.domain.dto.user.UserQueryRequest;
+import hk.fish.fishpicturebackend.domain.dto.user.UserRegisterRequest;
 import hk.fish.fishpicturebackend.domain.entity.User;
 import hk.fish.fishpicturebackend.domain.enums.UserRoleEnum;
 import hk.fish.fishpicturebackend.domain.vo.LoginUserVO;
+import hk.fish.fishpicturebackend.domain.vo.UserVO;
 import hk.fish.fishpicturebackend.exception.BusinessException;
 import hk.fish.fishpicturebackend.exception.ErrorCode;
 import hk.fish.fishpicturebackend.service.UserService;
@@ -20,6 +24,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 
 import javax.servlet.http.HttpServletRequest;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static hk.fish.fishpicturebackend.constant.UserConstant.USER_LOGIN_STATE;
 
@@ -167,6 +175,46 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         LoginUserVO loginUserVO = new LoginUserVO();
         BeanUtil.copyProperties(user, loginUserVO);
         return loginUserVO;
+    }
+
+    @Override
+    public UserVO getUserVO(User user) {
+        if (user == null) {
+            return null;
+        }
+        UserVO userVO = new UserVO();
+        BeanUtil.copyProperties(user, userVO);
+        return userVO;
+    }
+
+    @Override
+    public List<UserVO> getUserVOList(List<User> userList) {
+        if (CollUtil.isEmpty(userList)) {
+            return new ArrayList<>();
+        }
+        return userList.stream().map(this::getUserVO).collect(Collectors.toList());
+    }
+
+    @Override
+    public QueryWrapper<User> getQueryWrapper(UserQueryRequest userQueryRequest) {
+        if (userQueryRequest == null) {
+            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "请求参数为空");
+        }
+        Long id = userQueryRequest.getId();
+        String userName = userQueryRequest.getUserName();
+        String userAccount = userQueryRequest.getUserAccount();
+        String userProfile = userQueryRequest.getUserProfile();
+        String userRole = userQueryRequest.getUserRole();
+        String sortField = userQueryRequest.getSortField();
+        String sortOrder = userQueryRequest.getSortOrder();
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq(ObjUtil.isNotNull(id), "id", id);
+        queryWrapper.eq(StrUtil.isNotBlank(userRole), "userRole", userRole);
+        queryWrapper.like(StrUtil.isNotBlank(userAccount), "userAccount", userAccount);
+        queryWrapper.like(StrUtil.isNotBlank(userName), "userName", userName);
+        queryWrapper.like(StrUtil.isNotBlank(userProfile), "userProfile", userProfile);
+        queryWrapper.orderBy(StrUtil.isNotEmpty(sortField), sortOrder.equals("ascend"), sortField);
+        return queryWrapper;
     }
 }
 

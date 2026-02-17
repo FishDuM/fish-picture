@@ -1,13 +1,17 @@
 package hk.fish.fishpicturebackend.service;
 
-import hk.fish.fishpicturebackend.domain.dto.UserLoginRequest;
-import hk.fish.fishpicturebackend.domain.dto.UserRegisterRequest;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import hk.fish.fishpicturebackend.domain.dto.user.UserLoginRequest;
+import hk.fish.fishpicturebackend.domain.dto.user.UserQueryRequest;
+import hk.fish.fishpicturebackend.domain.dto.user.UserRegisterRequest;
 import hk.fish.fishpicturebackend.domain.entity.User;
 import com.baomidou.mybatisplus.extension.service.IService;
 import hk.fish.fishpicturebackend.domain.vo.LoginUserVO;
+import hk.fish.fishpicturebackend.domain.vo.UserVO;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
 * @author 30574
@@ -60,4 +64,28 @@ public interface UserService extends IService<User> {
      * @return
      */
     LoginUserVO getLoginUserVO(User user);
+
+    /**
+     * 获得脱敏后的用户信息
+     *
+     * @param user
+     * @return
+     */
+    UserVO getUserVO(User user);
+
+    /**
+     * 获得脱敏后的用户信息列表
+     *
+     * @param userVOList
+     * @return
+     */
+    List<UserVO> getUserVOList(List<User> userVOList);
+
+    /**
+     * 获取查询条件
+     *
+     * @param userQueryRequest
+     * @return
+     */
+    QueryWrapper<User> getQueryWrapper(UserQueryRequest userQueryRequest);
 }
