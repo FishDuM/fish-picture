@@ -1,4 +1,4 @@
-package hk.fish.fishpicturebackend.domain;
+package hk.fish.fishpicturebackend.domain.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
 
