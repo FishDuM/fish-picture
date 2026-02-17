@@ -30,7 +30,7 @@ public enum UserRoleEnum {
             return null;
         }
         for (UserRoleEnum userRoleEnum : UserRoleEnum.values()) {
-            if (userRoleEnum.text.equals(value)) {
+            if (userRoleEnum.value.equals(value)) {
                 return userRoleEnum;
             }
         }
